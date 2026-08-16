@@ -22,11 +22,30 @@ jobs:
       - name: Show Xcode
         run: xcodebuild -version
 
-      - name: Build Swift package
-        run: swift build
+      - name: Build iOS simulator app
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d SwiftCodeApp.xcodeproj ]; then
+            xcodebuild               -project SwiftCodeApp.xcodeproj               -scheme SwiftCodeApp               -configuration Debug               -sdk iphonesimulator               -destination 'generic/platform=iOS Simulator'               -derivedDataPath build/DerivedData               CODE_SIGNING_ALLOWED=NO               CODE_SIGNING_REQUIRED=NO               build
 
-      - name: Upload build folder
+            APP_PATH="$(find build/DerivedData/Build/Products -path '*Debug-iphonesimulator/*.app' -type d | head -n 1)"
+            if [ -z "$APP_PATH" ]; then
+              echo "No simulator .app was produced."
+              exit 1
+            fi
+
+            mkdir -p build/Appetize
+            cp -R "$APP_PATH" build/Appetize/
+          else
+            swift build
+            mkdir -p build/Appetize
+            cp -R .build build/Appetize/swift-package-build
+          fi
+
+      - name: Upload simulator artifact
         uses: actions/upload-artifact@v4
         with:
-          name: swiftcode-build
-          path: .build
+          name: swiftcode-simulator-app
+          path: build/Appetize
+          if-no-files-found: error
