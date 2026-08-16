@@ -1,0 +1,29 @@
+name: SwiftCode iOS Build
+
+on:
+  repository_dispatch:
+    types: [swiftcode-build]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Xcode
+        run: xcodebuild -version
+
+      - name: Build Swift package
+        run: swift build
+
+      - name: Upload build folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: swiftcode-build
+          path: .build
