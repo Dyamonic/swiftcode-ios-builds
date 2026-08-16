@@ -1,0 +1,5 @@
+name: SwiftUI Hello
+bundleIdentifier: com.swiftcode.hello
+platform: ios
+template: swiftui-hello
+minimumIOS: "16.0"
