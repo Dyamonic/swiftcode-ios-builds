@@ -63,6 +63,8 @@ struct ContentView: View {
             }
             .tag(2)
         }
+        .preferredColorScheme(.dark)
+        .background(Color.black.ignoresSafeArea())
     }
 
     private var heroSection: some View {
